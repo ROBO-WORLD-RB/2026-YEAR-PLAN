@@ -10,7 +10,7 @@ interface ModalProps {
     onClose: () => void;
     children: React.ReactNode;
     title?: string;
-    size?: 'sm' | 'md' | 'lg' | 'xl';
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
     className?: string;
 }
 
@@ -44,6 +44,7 @@ export function Modal({
         md: 'max-w-lg',
         lg: 'max-w-2xl',
         xl: 'max-w-4xl',
+        full: 'max-w-full',
     };
 
     return (
@@ -59,50 +60,43 @@ export function Modal({
                         onClick={onClose}
                     />
 
-                    {/* Modal Container */}
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+                    {/* Modal Container - Full screen on mobile */}
+                    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
                         <motion.div
                             className={cn(
                                 'w-full pointer-events-auto',
                                 'bg-space-dark/95 backdrop-blur-xl',
-                                'border border-white/10 rounded-2xl',
+                                'border border-white/10',
+                                // Mobile: full width, rounded top only, slide up from bottom
+                                'rounded-t-2xl sm:rounded-2xl',
                                 'shadow-2xl shadow-black/50',
                                 'overflow-hidden',
+                                // Mobile: take most of screen, desktop: normal sizes
+                                'max-h-[90vh] sm:max-h-[85vh]',
                                 sizes[size],
                                 className
                             )}
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            transition={{ type: 'spring', duration: 0.5 }}
+                            initial={{ opacity: 0, y: 100 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 100 }}
+                            transition={{ type: 'spring', duration: 0.4, bounce: 0.1 }}
                         >
-                            {/* Header */}
-                            {title && (
-                                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-                                    <h3 className="text-xl font-heading font-bold text-soft-white">
-                                        {title}
-                                    </h3>
-                                    <button
-                                        onClick={onClose}
-                                        className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Close button if no title */}
-                            {!title && (
+                            {/* Header - Always visible for easy closing */}
+                            <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 sticky top-0 bg-space-dark/95 backdrop-blur-xl z-10">
+                                <h3 className="text-lg sm:text-xl font-heading font-bold text-soft-white truncate pr-4">
+                                    {title || 'Details'}
+                                </h3>
                                 <button
                                     onClick={onClose}
-                                    className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors z-10"
+                                    className="p-2 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
+                                    aria-label="Close modal"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
-                            )}
+                            </div>
 
-                            {/* Content */}
-                            <div className="p-6 max-h-[80vh] overflow-y-auto">
+                            {/* Content - Scrollable */}
+                            <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-60px)] sm:max-h-[calc(85vh-72px)]">
                                 {children}
                             </div>
                         </motion.div>
