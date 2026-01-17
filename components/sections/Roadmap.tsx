@@ -69,13 +69,12 @@ export function Roadmap() {
 
                                     <GlassCard
                                         className={cn(
-                                            'p-6 h-full transition-all duration-300 hover:border-opacity-50',
-                                            quarter.isCurrent && 'ring-2 ring-offset-2 ring-offset-deep-space'
+                                            'p-6 h-full transition-all duration-300 hover:border-opacity-50'
                                         )}
                                         style={{
                                             borderColor: quarter.isCurrent ? quarter.color : undefined,
-                                            // @ts-ignore
-                                            '--tw-ring-color': quarter.color,
+                                            // Use boxShadow for ring effect instead of CSS variable
+                                            boxShadow: quarter.isCurrent ? `0 0 0 2px ${quarter.color}` : undefined,
                                         }}
                                     >
                                         {/* Current badge */}
